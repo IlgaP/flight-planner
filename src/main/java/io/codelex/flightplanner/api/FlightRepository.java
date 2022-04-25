@@ -3,7 +3,6 @@ package io.codelex.flightplanner.api;
 import io.codelex.flightplanner.classes.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -99,11 +98,11 @@ public class FlightRepository {
     }
 
 
-    public PageResult searchFlight(SearchFlightReq searchFlightReq) {
+    public PageResult<Flight> searchFlight(SearchFlightReq searchFlightReq) {
         if (searchFlightReq.getTo().equals(searchFlightReq.getFrom())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         List<Flight> flightList = flights.stream().filter(searchFlightReq::equalsFlight).toList();
-        return new PageResult(flightList);
+        return new PageResult<>(flightList);
     }
 }

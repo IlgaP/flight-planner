@@ -1,16 +1,13 @@
 package io.codelex.flightplanner.controllers;
-
 import io.codelex.flightplanner.classes.AddFlightRequest;
 import io.codelex.flightplanner.classes.Flight;
 import io.codelex.flightplanner.api.FlightService;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
-@Validated
 @RequestMapping("/admin-api")
 public class AdminFlightApiController {
 

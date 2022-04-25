@@ -10,6 +10,7 @@ public class PageResult<T> {
     private List<T> items;
 
     public PageResult(List<T> items) {
+        this.page = 0;
         this.totalItems = items.size();
         this.items = items;
     }
