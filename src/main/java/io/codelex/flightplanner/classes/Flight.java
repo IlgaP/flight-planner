@@ -89,7 +89,12 @@ public class Flight {
         if (this == o) return true;
         if (!(o instanceof Flight)) return false;
         Flight flight = (Flight) o;
-        return getId() == flight.getId() && Objects.equals(getFrom(), flight.getFrom()) && Objects.equals(getTo(), flight.getTo()) && Objects.equals(getCarrier(), flight.getCarrier()) && Objects.equals(getDepartureTime(), flight.getDepartureTime()) && Objects.equals(getArrivalTime(), flight.getArrivalTime());
+        return getId() == flight.getId()
+                && Objects.equals(getFrom(), flight.getFrom())
+                && Objects.equals(getTo(), flight.getTo())
+                && Objects.equals(getCarrier(), flight.getCarrier())
+                && Objects.equals(getDepartureTime(), flight.getDepartureTime())
+                && Objects.equals(getArrivalTime(), flight.getArrivalTime());
     }
 
     @Override

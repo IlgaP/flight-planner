@@ -2,6 +2,7 @@ package io.codelex.flightplanner.classes;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class SearchFlightRequest {
@@ -22,6 +23,10 @@ public class SearchFlightRequest {
         this.from = from;
         this.to = to;
         this.departureDate = String.format(departureDate, formatter);
+    }
+
+    public SearchFlightReq toDomain() {
+        return new SearchFlightReq(from, to, LocalDate.parse(departureDate, formatter));
     }
 
     public String getFrom() {

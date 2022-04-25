@@ -1,17 +1,16 @@
 package io.codelex.flightplanner.classes;
 
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class PageResult<T> {
 
     private int page;
     private int totalItems;
-    private ArrayList<T> items;
+    private List<T> items;
 
-    public PageResult(int page, int totalItems, ArrayList<T> items) {
-        this.page = page;
-        this.totalItems = totalItems;
+    public PageResult(List<T> items) {
+        this.totalItems = items.size();
         this.items = items;
     }
 
@@ -31,11 +30,11 @@ public class PageResult<T> {
         this.totalItems = totalItems;
     }
 
-    public ArrayList<T> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<T> items) {
+    public void setItems(List<T> items) {
         this.items = items;
     }
 

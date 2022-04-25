@@ -1,8 +1,6 @@
 package io.codelex.flightplanner.api;
 
-import io.codelex.flightplanner.classes.AddFlightRequest;
-import io.codelex.flightplanner.classes.Airport;
-import io.codelex.flightplanner.classes.Flight;
+import io.codelex.flightplanner.classes.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,15 +14,15 @@ public class FlightService {
         this.flightRepository = flightRepository;
     }
 
-    public Flight addFlight(@RequestBody AddFlightRequest addFlightRequest) {
+    public Flight addFlight(AddFlightRequest addFlightRequest) {
         return flightRepository.addFlight(addFlightRequest);
     }
 
-    public  void deleteFlight(@PathVariable("id") int id) {
+    public void deleteFlight(int id) {
         flightRepository.deleteFlight(id);
     }
 
-    public Flight getFlight(@PathVariable("id") int id) {
+    public Flight getFlight(int id) {
         return flightRepository.getFlight(id);
     }
 
@@ -37,4 +35,11 @@ public class FlightService {
         return flightRepository.searchAirports(search);
     }
 
+    public PageResult searchFlight(SearchFlightReq searchFlightReq) {
+        return flightRepository.searchFlight(searchFlightReq);
     }
+
+    public Flight findFlight(int id) {
+        return flightRepository.getFlight(id);
+    }
+}

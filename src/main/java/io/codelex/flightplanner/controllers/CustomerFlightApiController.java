@@ -5,6 +5,7 @@ import io.codelex.flightplanner.api.FlightService;
 import io.codelex.flightplanner.classes.Flight;
 import io.codelex.flightplanner.classes.PageResult;
 import io.codelex.flightplanner.classes.SearchFlightRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,9 +29,15 @@ public class CustomerFlightApiController {
     }
 
     @PostMapping("/flights/search")
-    public PageResult<Flight> searchFlight(@Valid @RequestBody SearchFlightRequest searchFlightRequest) {
+    @ResponseStatus(HttpStatus.OK)
+    public PageResult searchFlight(@Valid @RequestBody SearchFlightRequest searchFlightRequest) {
+        return flightService.searchFlight(searchFlightRequest.toDomain());
+    }
 
-
+    @GetMapping("/flights/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Flight findFlight(@PathVariable("id") int id) {
+        return flightService.getFlight(id);
     }
 
 }
