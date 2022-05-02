@@ -1,6 +1,5 @@
 package io.codelex.flightplanner.classes;
 
-
 import java.util.List;
 
 public class PageResult<T> {

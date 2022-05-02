@@ -4,6 +4,7 @@ import io.codelex.flightplanner.classes.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ public class FlightRepository {
                 throw new ResponseStatusException(HttpStatus.CONFLICT);
             }
         }
-            if (containsSameAirport(addFlightRequest)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
+        if (containsSameAirport(addFlightRequest)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         Flight flight = new Flight(count,
                 addFlightRequest.getFrom(),
@@ -35,9 +36,9 @@ public class FlightRepository {
                 LocalDateTime.parse(addFlightRequest.getDepartureTime(), formatter),
                 LocalDateTime.parse(addFlightRequest.getArrivalTime(), formatter));
 
-            if (isValidDate(flight)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
+        if (isValidDate(flight)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         flights.add(flight);
         count++;

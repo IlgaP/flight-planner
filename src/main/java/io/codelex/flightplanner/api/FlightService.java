@@ -2,7 +2,6 @@ package io.codelex.flightplanner.api;
 
 import io.codelex.flightplanner.classes.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

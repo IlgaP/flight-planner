@@ -1,6 +1,5 @@
 package io.codelex.flightplanner.classes;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -83,8 +82,7 @@ public class AddFlightRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AddFlightRequest)) return false;
-        AddFlightRequest that = (AddFlightRequest) o;
+        if (!(o instanceof AddFlightRequest that)) return false;
         return Objects.equals(getFrom(), that.getFrom()) && Objects.equals(getTo(), that.getTo()) && Objects.equals(getCarrier(), that.getCarrier()) && Objects.equals(getDepartureTime(), that.getDepartureTime()) && Objects.equals(getArrivalTime(), that.getArrivalTime());
     }
 

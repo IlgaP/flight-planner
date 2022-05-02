@@ -15,15 +15,10 @@ public class TestApiController {
     }
 
 
-        @PostMapping("/clear")
-        public void clear() {
-            flightService.clear();
-        }
-
-
-//        @GetMapping("/flights")
-//        public List<Flight> getFlights(){
-//            return flights;
-//        }
+    @PostMapping("/clear")
+    public void clear() {
+        flightService.clear();
     }
+
+}
 

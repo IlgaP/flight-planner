@@ -1,4 +1,5 @@
 package io.codelex.flightplanner.controllers;
+
 import io.codelex.flightplanner.classes.AddFlightRequest;
 import io.codelex.flightplanner.classes.Flight;
 import io.codelex.flightplanner.api.FlightService;
