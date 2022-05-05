@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static io.codelex.flightplanner.api.FlightRepository.formatter;
+
 public class Flight {
 
     private int id;
@@ -100,5 +102,13 @@ public class Flight {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getFrom(), getTo(), getCarrier(), getDepartureTime(), getArrivalTime());
+    }
+
+    public boolean isSameFlight(AddFlightRequest addFlightRequest) {
+        return (this.getFrom().toString()).equals(addFlightRequest.getFrom().toString())
+                && (this.getTo().toString()).equals(addFlightRequest.getTo().toString())
+                && (this.getCarrier()).equals(addFlightRequest.getCarrier())
+                && this.getDepartureTime().format(formatter).equals(addFlightRequest.getDepartureTime())
+                && this.getArrivalTime().format(formatter).equals(addFlightRequest.getArrivalTime());
     }
 }

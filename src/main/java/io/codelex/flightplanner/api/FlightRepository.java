@@ -17,14 +17,14 @@ public class FlightRepository {
     private final List<Flight> flights = new ArrayList<>();
     private final List<Airport> airports = new ArrayList<>();
     private static int count = 1;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public synchronized Flight addFlight(AddFlightRequest addFlightRequest) {
-        for (Flight eachFlight : flights) {
-            if (isSameFlight(addFlightRequest, eachFlight)) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT);
-            }
+
+        if (flights.stream().anyMatch(flight -> flight.isSameFlight(addFlightRequest))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
+
         if (containsSameAirport(addFlightRequest)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -51,17 +51,7 @@ public class FlightRepository {
     }
 
     private boolean containsSameAirport(AddFlightRequest addFlightRequest) {
-        return addFlightRequest.getFrom().getCountry().trim().equalsIgnoreCase(addFlightRequest.getTo().getCountry().trim())
-                && addFlightRequest.getFrom().getCity().trim().equalsIgnoreCase(addFlightRequest.getTo().getCity().trim())
-                && addFlightRequest.getFrom().getAirport().trim().equalsIgnoreCase(addFlightRequest.getTo().getAirport().trim());
-    }
-
-    private boolean isSameFlight(AddFlightRequest addFlightRequest, Flight eachFlight) {
-        return (eachFlight.getFrom().toString()).equals(addFlightRequest.getFrom().toString())
-                && (eachFlight.getTo().toString()).equals(addFlightRequest.getTo().toString())
-                && (eachFlight.getCarrier()).equals(addFlightRequest.getCarrier())
-                && eachFlight.getDepartureTime().format(formatter).equals(addFlightRequest.getDepartureTime())
-                && eachFlight.getArrivalTime().format(formatter).equals(addFlightRequest.getArrivalTime());
+        return addFlightRequest.getFrom().getAirport().trim().equalsIgnoreCase(addFlightRequest.getTo().getAirport().trim());
     }
 
     public synchronized void deleteFlight(int id) {
@@ -69,12 +59,10 @@ public class FlightRepository {
     }
 
     public synchronized Flight getFlight(int id) {
-        for (Flight eachFlight : flights) {
-            if (eachFlight.getId() == id) {
-                return eachFlight;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return flights.stream()
+                .filter(flight -> flight.getId() == (id))
+                .findAny()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     public void clear() {
@@ -82,6 +70,7 @@ public class FlightRepository {
     }
 
     public synchronized List<Airport> searchAirports(String search) {
+
         for (Flight flight : flights) {
             if (flightContainsSearchPhrase(search, flight)) {
                 if (!(airports.contains(flight.getFrom()))) {
