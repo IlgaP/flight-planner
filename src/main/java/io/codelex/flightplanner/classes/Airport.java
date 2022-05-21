@@ -1,8 +1,10 @@
 package io.codelex.flightplanner.classes;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+@Entity
 public class Airport {
     @NotNull
     @NotBlank
@@ -12,12 +14,17 @@ public class Airport {
     private String city;
     @NotNull
     @NotBlank
+    @Id
     private String airport;
+
 
     public Airport(String country, String city, String airport) {
         this.country = country;
         this.city = city;
         this.airport = airport;
+    }
+
+    public Airport() {
     }
 
     public String getCountry() {

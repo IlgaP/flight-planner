@@ -1,7 +1,9 @@
 package io.codelex.flightplanner.controllers;
 
-import io.codelex.flightplanner.api.FlightService;
-import org.springframework.web.bind.annotation.*;
+import io.codelex.flightplanner.service.FlightService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
