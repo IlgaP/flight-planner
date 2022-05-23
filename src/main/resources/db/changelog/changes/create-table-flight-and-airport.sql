@@ -11,7 +11,7 @@
 
         CREATE TABLE flight
         (
-        id serial PRIMARY KEY NOT NULL UNIQUE,
+        id BIGINT PRIMARY KEY NOT NULL UNIQUE,
         airport_from VARCHAR(255) NOT NULL,
         airport_to VARCHAR(255) NOT NULL,
         carrier VARCHAR(255) NOT NULL,

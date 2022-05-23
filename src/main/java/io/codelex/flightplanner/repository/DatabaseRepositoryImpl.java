@@ -16,6 +16,7 @@ import java.util.Optional;
 
 
 @Repository
+@Transactional
 @ConditionalOnProperty(prefix = "flight-planner", name = "store-type", havingValue = "database")
 public class DatabaseRepositoryImpl extends AbstractRepository implements FlightRepository {
 
@@ -31,18 +32,7 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
 
 
     @Override
-    @Transactional
     public Flight addFlight(AddFlightRequest addFlightRequest) {
-        Optional<Airport> maybeAirportTo = airportDatabaseRepository.findById(addFlightRequest.getTo().getAirport());
-        if (maybeAirportTo.isEmpty()) {
-            Airport airport = addFlightRequest.getTo();
-            airportDatabaseRepository.save(airport);
-        }
-
-        Optional<Airport> maybeAirportFrom = airportDatabaseRepository.findById(addFlightRequest.getFrom().getAirport());
-        if (maybeAirportFrom.isEmpty()) {
-            airportDatabaseRepository.save(addFlightRequest.getFrom());
-        }
 
         if (flightDatabaseRepository.findAll().stream().anyMatch(flight -> flight.isSameFlight(addFlightRequest))) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
@@ -59,18 +49,24 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
                 LocalDateTime.parse(addFlightRequest.getDepartureTime(), formatter),
                 LocalDateTime.parse(addFlightRequest.getArrivalTime(), formatter));
 
+        flight.setFrom(getOrCreate(addFlightRequest.getFrom()));
+        flight.setTo(getOrCreate(addFlightRequest.getTo()));
+
 
         if (isValidDate(flight)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
+
         return flightDatabaseRepository.save(flight);
     }
 
-
+    private Airport getOrCreate(Airport airport) {
+        Optional <Airport> maybeAirport = airportDatabaseRepository.findById(airport.getAirport());
+        return maybeAirport.orElseGet(() -> airportDatabaseRepository.save(airport));
+    }
 
     @Override
-    @Transactional
     public void deleteFlight(Long id) {
         if (flightDatabaseRepository.existsById(id)) {
             flightDatabaseRepository.deleteById(id);
@@ -80,7 +76,6 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
     }
 
     @Override
-    @Transactional
     public Flight getFlight(Long id) {
         if (flightDatabaseRepository.existsById(id)) {
             return flightDatabaseRepository.getById(id);
@@ -90,13 +85,12 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
     }
 
     @Override
-    @Transactional
     public void clear() {
         flightDatabaseRepository.deleteAll();
+        airportDatabaseRepository.deleteAll();
     }
 
     @Override
-    @Transactional
     public List<Airport> searchAirports(String search) {
        return airportDatabaseRepository.findAll().stream().filter(airport -> airportContainsSearchPhrase(search, airport)).toList();
     }
@@ -108,8 +102,11 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
     };
 
     @Override
-    @Transactional
     public PageResult<Flight> searchFlight(SearchFlightReq searchFlightReq) {
-        return null;
+        if (searchFlightReq.getTo().equals(searchFlightReq.getFrom())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        List<Flight> flightList = flightDatabaseRepository.findAll().stream().filter(searchFlightReq::equalsFlight).toList();
+        return new PageResult<>(flightList);
     }
 }

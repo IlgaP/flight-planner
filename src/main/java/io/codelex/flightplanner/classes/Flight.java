@@ -1,13 +1,16 @@
 package io.codelex.flightplanner.classes;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static io.codelex.flightplanner.repository.FlightRepositoryImpl.formatter;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Flight {
     @Id
@@ -23,9 +26,11 @@ public class Flight {
     private Long id;
     @JoinColumn(name = "airport_from")
     @ManyToOne
+    @NotNull
     private Airport from;
     @JoinColumn(name = "airport_to")
     @ManyToOne
+    @NotNull
     private Airport to;
     private String carrier;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

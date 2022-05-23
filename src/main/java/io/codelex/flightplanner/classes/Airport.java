@@ -15,6 +15,7 @@ public class Airport {
     @NotNull
     @NotBlank
     @Id
+    //@OneToMany(mappedBy = "airport")
     private String airport;
 
 
