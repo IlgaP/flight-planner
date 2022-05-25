@@ -1,24 +1,48 @@
 package io.codelex.flightplanner.classes;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static io.codelex.flightplanner.api.FlightRepository.formatter;
+import static io.codelex.flightplanner.repository.FlightRepositoryImpl.formatter;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Entity
 public class Flight {
-
-    private int id;
+    @Id
+    @SequenceGenerator(
+            name = "flight_sequence",
+            sequenceName = "flight_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "flight_sequence"
+    )
+    private Long id;
+    @JoinColumn(name = "airport_from")
+    @ManyToOne
+    @NotNull
     private Airport from;
+    @JoinColumn(name = "airport_to")
+    @ManyToOne
+    @NotNull
     private Airport to;
     private String carrier;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "departure_time")
     private LocalDateTime departureTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "arrival_time")
     private LocalDateTime arrivalTime;
 
-    public Flight(int id, Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+    public Flight() {
+    }
+    public Flight(Long id, Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
         this.id = id;
         this.from = from;
         this.to = to;
@@ -27,11 +51,25 @@ public class Flight {
         this.arrivalTime = arrivalTime;
     }
 
-    public int getId() {
+    public Flight(Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+        this.from = from;
+        this.to = to;
+        this.carrier = carrier;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
+
+    public Flight(String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+        this.carrier = carrier;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -1,12 +1,13 @@
 package io.codelex.flightplanner.controllers;
 
 import io.codelex.flightplanner.classes.Airport;
-import io.codelex.flightplanner.api.FlightService;
 import io.codelex.flightplanner.classes.Flight;
 import io.codelex.flightplanner.classes.PageResult;
 import io.codelex.flightplanner.classes.SearchFlightRequest;
+import io.codelex.flightplanner.service.FlightService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CustomerFlightApiController {
 
     @GetMapping("/flights/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Flight findFlight(@PathVariable("id") int id) {
+    public Flight findFlight(@PathVariable("id") Long id) {
         return flightService.getFlight(id);
     }
 

@@ -1,6 +1,7 @@
-package io.codelex.flightplanner.api;
+package io.codelex.flightplanner.repository;
 
 import io.codelex.flightplanner.classes.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -9,14 +10,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Repository
-public class FlightRepository {
+@ConditionalOnProperty(prefix = "flight-planner", name = "store-type", havingValue = "in-memory")
+public class FlightRepositoryImpl extends AbstractRepository implements FlightRepository {
 
     private final List<Flight> flights = new ArrayList<>();
     private final List<Airport> airports = new ArrayList<>();
-    private static int count = 1;
+    private static Long count = 1L;
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public synchronized Flight addFlight(AddFlightRequest addFlightRequest) {
@@ -45,22 +48,13 @@ public class FlightRepository {
         return flight;
     }
 
-    private boolean isValidDate(Flight flight) {
-        return flight.getArrivalTime().isBefore(flight.getDepartureTime())
-                || flight.getArrivalTime().equals(flight.getDepartureTime());
+    public synchronized void deleteFlight(Long id) {
+        flights.removeIf(eachFlight -> Objects.equals(eachFlight.getId(), id));
     }
 
-    private boolean containsSameAirport(AddFlightRequest addFlightRequest) {
-        return addFlightRequest.getFrom().getAirport().trim().equalsIgnoreCase(addFlightRequest.getTo().getAirport().trim());
-    }
-
-    public synchronized void deleteFlight(int id) {
-        flights.removeIf(eachFlight -> eachFlight.getId() == id);
-    }
-
-    public synchronized Flight getFlight(int id) {
+    public synchronized Flight getFlight(Long id) {
         return flights.stream()
-                .filter(flight -> flight.getId() == (id))
+                .filter(flight -> Objects.equals(flight.getId(), id))
                 .findAny()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -80,13 +74,6 @@ public class FlightRepository {
         }
         return airports;
     }
-
-    private boolean flightContainsSearchPhrase(String search, Flight flight) {
-        return flight.getFrom().getCountry().toLowerCase().contains(search.trim().toLowerCase())
-                || flight.getFrom().getCity().toLowerCase().contains(search.trim().toLowerCase())
-                || flight.getFrom().getAirport().toLowerCase().contains(search.trim().toLowerCase());
-    }
-
 
     public PageResult<Flight> searchFlight(SearchFlightReq searchFlightReq) {
         if (searchFlightReq.getTo().equals(searchFlightReq.getFrom())) {
