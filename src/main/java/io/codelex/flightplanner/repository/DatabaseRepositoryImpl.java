@@ -34,17 +34,13 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
     @Override
     public Flight addFlight(AddFlightRequest addFlightRequest) {
 
-        if (flightDatabaseRepository.findAll().stream().anyMatch(flight -> flight.isSameFlight(addFlightRequest))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
         if (containsSameAirport(addFlightRequest)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         Flight flight = new Flight(
-                addFlightRequest.getFrom(),
-                addFlightRequest.getTo(),
+//                addFlightRequest.getFrom(),
+//                addFlightRequest.getTo(),
                 addFlightRequest.getCarrier(),
                 LocalDateTime.parse(addFlightRequest.getDepartureTime(), formatter),
                 LocalDateTime.parse(addFlightRequest.getArrivalTime(), formatter));
@@ -52,11 +48,18 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
         flight.setFrom(getOrCreate(addFlightRequest.getFrom()));
         flight.setTo(getOrCreate(addFlightRequest.getTo()));
 
+        if (flightDatabaseRepository.existsByFromAndToAndCarrierAndDepartureTimeAndArrivalTime(
+                flight.getFrom(),
+                flight.getTo(),
+                flight.getCarrier(),
+                flight.getDepartureTime(),
+                flight.getArrivalTime())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
 
         if (isValidDate(flight)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-
 
         return flightDatabaseRepository.save(flight);
     }
@@ -92,21 +95,24 @@ public class DatabaseRepositoryImpl extends AbstractRepository implements Flight
 
     @Override
     public List<Airport> searchAirports(String search) {
-       return airportDatabaseRepository.findAll().stream().filter(airport -> airportContainsSearchPhrase(search, airport)).toList();
+        search = search.trim().toLowerCase();
+       return airportDatabaseRepository.findByCityAndCountryAndAirportContaining(search);
     }
-
-    private static boolean airportContainsSearchPhrase(String search, Airport airport) {
-        return airport.getCountry().toLowerCase().contains(search.trim().toLowerCase())
-                || airport.getCity().toLowerCase().contains(search.trim().toLowerCase())
-                || airport.getAirport().toLowerCase().contains(search.trim().toLowerCase());
-    };
 
     @Override
     public PageResult<Flight> searchFlight(SearchFlightReq searchFlightReq) {
         if (searchFlightReq.getTo().equals(searchFlightReq.getFrom())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        List<Flight> flightList = flightDatabaseRepository.findAll().stream().filter(searchFlightReq::equalsFlight).toList();
+
+        LocalDateTime departureDateStart = searchFlightReq.getDepartureDate().atStartOfDay();
+        LocalDateTime departureDateEnd = departureDateStart.plusDays(1L);
+
+        List<Flight> flightList = flightDatabaseRepository.searchFlight(
+                searchFlightReq.getFrom(),
+                searchFlightReq.getTo(),
+                departureDateStart,
+                departureDateEnd);
         return new PageResult<>(flightList);
     }
 }
